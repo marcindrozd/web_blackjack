@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'sinatra'
+require 'pry'
 
 use Rack::Session::Cookie,  :key => 'rack.session',
                             :path => '/',
@@ -9,6 +10,11 @@ get '/' do
   erb :hello
 end
 
-get '/set_username' do
+get '/new_game' do
   erb :set_username
+end
+
+post '/new_game' do
+  session[:player_name] = params[:player_name]
+  "Hello #{session[:player_name]}"
 end
