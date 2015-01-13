@@ -1,0 +1,12 @@
+<h4><%= "Dealer has the following cards:" %></h4>
+  <ul>
+    <li>One hidden card</li>
+    <li><%= session[:dealer_cards].last %></li>
+  </ul>
+
+<h4><%= "#{session[:player_name]} has the following cards:" %></h4>
+  <ul>
+    <% session[:player_cards].each do |card| %>
+      <li><%= card %></li>
+    <% end %>
+  </ul>
