@@ -11,10 +11,18 @@ get '/' do
 end
 
 get '/new_game' do
-  erb :set_username
+  if session[:player_name].nil?
+    erb :set_username
+  else
+    redirect "/bet"
+  end
 end
 
 post '/new_game' do
   session[:player_name] = params[:player_name]
-  "Hello #{session[:player_name]}"
+  redirect "/bet"
+end
+
+get '/bet' do
+  "Please place your bets #{session[:player_name]}!"
 end
