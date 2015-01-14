@@ -6,6 +6,58 @@ use Rack::Session::Cookie,  :key => 'rack.session',
                             :path => '/',
                             :secret => 'aih3284hreuwf8'
 
+helpers do
+  def prepare_deck
+    session[:deck] = []
+    SUITS.each do |suit|
+      VALUES.each do |value|
+        session[:deck] << value + suit
+      end
+    end
+    session[:deck].shuffle!
+  end
+
+  def calculate_total(array)
+    total = 0
+    array.each do |card|
+      if card.to_i != 0
+        total += card.to_i
+      elsif card[0] == "A"
+        total += 11
+      else
+        total += 10
+      end
+    end
+
+    # Additional aces calculation
+    array.select { |item| item =~ /[A]/}.count.times do
+      total -= 10 if total > 21
+    end 
+    total
+  end
+
+  def check_blackjack_or_bust(player_or_dealer)
+    if player_or_dealer == "player"
+      if calculate_total(session[:player_cards]) == 21
+        redirect "/player_blackjack"
+        # redirect to blackjack_player message
+      elsif calculate_total(session[:player_cards]) > 21
+        redirect "/player_busted"
+        # redirect to busted_player message
+      end
+    else
+      if calculate_total(session[:dealer_cards]) == 21
+        redirect "/dealer_blackjack"
+        # redirect to blackjack_player message
+      elsif calculate_total(session[:dealer_cards]) > 21
+        redirect "/dealer_busted"
+        # redirect to busted_player message
+      end
+    end
+  end
+
+end
+
 get '/' do
   session.clear
   redirect "/new_game"
@@ -28,16 +80,6 @@ get '/game' do
   VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
   SUITS = ["D", "H", "C", "S"]
 
-  def prepare_deck
-    session[:deck] = []
-    SUITS.each do |suit|
-      VALUES.each do |value|
-        session[:deck] << value + suit
-      end
-    end
-    session[:deck].shuffle!
-  end
-
   prepare_deck
 
   session[:player_cards] = []
@@ -53,74 +95,16 @@ get '/game' do
 end
 
 get '/player_turn' do
-  def calculate_total(array)
-    total = 0
-    array.each do |card|
-      if card.to_i != 0
-        total += card.to_i
-      elsif card[0] == "A"
-        total += 11
-      else
-        total += 10
-      end
-    end
-
-    # Additional aces calculation
-    array.select { |item| item =~ /[A]/}.count.times do
-      total -= 10 if total > 21
-    end 
-    total
-  end
-
-  def check_blackjack_or_bust
-    if calculate_total(session[:player_cards]) == 21
-      redirect "/player_blackjack"
-      # redirect to blackjack_player message
-    elsif calculate_total(session[:player_cards]) > 21
-      redirect "/player_busted"
-      # redirect to busted_player message
-    end
-  end
-
   # check if player busts or blackjack
-  check_blackjack_or_bust
+  check_blackjack_or_bust("player")
 
   erb :"player/turn"
 end
 
 post '/player_turn' do
-  def calculate_total(array)
-    total = 0
-    array.each do |card|
-      if card.to_i != 0
-        total += card.to_i
-      elsif card[0] == "A"
-        total += 11
-      else
-        total += 10
-      end
-    end
-
-    # Additional aces calculation
-    array.select { |item| item =~ /[A]/}.count.times do
-      total -= 10 if total > 21
-    end 
-    total
-  end
-
   # check bust or blackjack
 
-  def check_blackjack_or_bust
-    if calculate_total(session[:player_cards]) == 21
-      redirect "/player_blackjack"
-      # redirect to blackjack_player message
-    elsif calculate_total(session[:player_cards]) > 21
-      redirect "/player_busted"
-      # redirect to busted_player message
-    end
-  end
-
-  check_blackjack_or_bust
+  check_blackjack_or_bust("player")
 
   if params.has_key?("hit")
     session[:player_cards] << session[:deck].pop
