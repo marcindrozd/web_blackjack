@@ -43,19 +43,15 @@ helpers do
   def check_blackjack_or_bust(player_or_dealer)
     if player_or_dealer == "player"
       if calculate_total(session[:player_cards]) == 21
-        redirect "/player_blackjack"
-        # redirect to blackjack_player message
+        @error = "Congratulations! You hit blackjack!"
       elsif calculate_total(session[:player_cards]) > 21
-        redirect "/player_busted"
-        # redirect to busted_player message
+        @error = "Sorry, you busted!"
       end
     else
       if calculate_total(session[:dealer_cards]) == 21
-        redirect "/dealer_blackjack"
-        # redirect to blackjack_player message
+        @error = "Sorry! The dealer hit blackjack!"
       elsif calculate_total(session[:dealer_cards]) > 21
-        redirect "/dealer_busted"
-        # redirect to busted_player message
+        @error = "The dealer busted!"
       end
     end
   end
@@ -76,6 +72,11 @@ get '/new_game' do
 end
 
 post '/new_game' do
+  if params[:player_name].empty?
+    @error = "Player name cannot be empty!"
+    halt erb :set_username
+  end
+
   session[:player_name] = params[:player_name]
   redirect "/game"
 end
@@ -91,36 +92,24 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
 
-  redirect "/player_turn"
-
+  erb :game
 end
 
-get '/player_turn' do
-  # check if player busts or blackjack
-  check_blackjack_or_bust("player")
-
-  erb :"player/turn"
-end
-
-post '/player_turn' do
+post '/player/hit' do
   # check bust or blackjack
+  session[:player_cards] << session[:deck].pop
 
-  check_blackjack_or_bust("player")
-
-  if params.has_key?("hit")
-    session[:player_cards] << session[:deck].pop
-    redirect "/player_turn"
-  elsif params.has_key?("stay")
-    redirect "/dealer_turn"
+  if calculate_total(session[:player_cards]) == 21
+    @error = "Congratulations! You hit blackjack!"
+  elsif calculate_total(session[:player_cards]) > 21
+    @error = "Sorry, you busted!"
   end
+
+  erb :game
 end
 
-get '/player_blackjack' do
-  erb :"player/blackjack"
-end
-
-get '/player_busted' do
-  erb :"player/busted"
+post '/player/stay' do
+  redirect '/dealer_turn'
 end
 
 get '/dealer_turn' do
