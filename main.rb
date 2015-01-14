@@ -7,11 +7,14 @@ use Rack::Session::Cookie,  :key => 'rack.session',
                             :secret => 'aih3284hreuwf8'
 
 helpers do
+  VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace"]
+  SUITS = ["diamonds", "hearts", "clubs", "spades"]
+
   def prepare_deck
     session[:deck] = []
     SUITS.each do |suit|
       VALUES.each do |value|
-        session[:deck] << value + suit
+        session[:deck] << suit + "_" + value
       end
     end
     session[:deck].shuffle!
@@ -77,9 +80,6 @@ post '/new_game' do
 end
 
 get '/game' do
-  VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-  SUITS = ["D", "H", "C", "S"]
-
   prepare_deck
 
   session[:player_cards] = []
