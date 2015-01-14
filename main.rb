@@ -72,6 +72,19 @@ get '/player_turn' do
     total
   end
 
+  def check_blackjack_or_bust
+    if calculate_total(session[:player_cards]) == 21
+      redirect "/player_blackjack"
+      # redirect to blackjack_player message
+    elsif calculate_total(session[:player_cards]) > 21
+      redirect "/player_busted"
+      # redirect to busted_player message
+    end
+  end
+
+  # check if player busts or blackjack
+  check_blackjack_or_bust
+
   erb :"player/turn"
 end
 
@@ -95,10 +108,36 @@ post '/player_turn' do
     total
   end
 
+  # check bust or blackjack
+
+  def check_blackjack_or_bust
+    if calculate_total(session[:player_cards]) == 21
+      redirect "/player_blackjack"
+      # redirect to blackjack_player message
+    elsif calculate_total(session[:player_cards]) > 21
+      redirect "/player_busted"
+      # redirect to busted_player message
+    end
+  end
+
+  check_blackjack_or_bust
+
   if params.has_key?("hit")
     session[:player_cards] << session[:deck].pop
-    erb :"player/turn"
+    redirect "/player_turn"
   elsif params.has_key?("stay")
-    erb :"player/stay"
+    redirect "/player_stay"
   end
+end
+
+get '/player_blackjack' do
+  erb :"player/blackjack"
+end
+
+get '/player_busted' do
+  erb :"player/busted"
+end
+
+get '/player_stay' do
+  erb :"player/stay"
 end
