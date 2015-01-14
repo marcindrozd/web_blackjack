@@ -9,4 +9,10 @@
     <% session[:player_cards].each do |card| %>
       <li><%= card %></li>
     <% end %>
+    <h5>The total is: <%= calculate_total(session[:player_cards]) %></h5>
   </ul>
+
+  <form class="form-inline" method="post">
+    <button type="submit" name="hit" class="btn">Hit</button>
+    <button type="submit" name="stay" class="btn">Stay</button>
+  </form>

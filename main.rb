@@ -48,6 +48,57 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
 
-  erb :display_game
+  redirect "/player_turn"
 
+end
+
+get '/player_turn' do
+  def calculate_total(array)
+    total = 0
+    array.each do |card|
+      if card.to_i != 0
+        total += card.to_i
+      elsif card[0] == "A"
+        total += 11
+      else
+        total += 10
+      end
+    end
+
+    # Additional aces calculation
+    array.select { |item| item =~ /[A]/}.count.times do
+      total -= 10 if total > 21
+    end 
+    total
+  end
+
+  erb :"player/turn"
+end
+
+post '/player_turn' do
+  def calculate_total(array)
+    total = 0
+    array.each do |card|
+      if card.to_i != 0
+        total += card.to_i
+      elsif card[0] == "A"
+        total += 11
+      else
+        total += 10
+      end
+    end
+
+    # Additional aces calculation
+    array.select { |item| item =~ /[A]/}.count.times do
+      total -= 10 if total > 21
+    end 
+    total
+  end
+
+  if params.has_key?("hit")
+    session[:player_cards] << session[:deck].pop
+    erb :"player/turn"
+  elsif params.has_key?("stay")
+    erb :"player/stay"
+  end
 end
