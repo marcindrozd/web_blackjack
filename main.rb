@@ -154,5 +154,13 @@ get '/dealer_blackjack' do
 end
 
 get '/declare_winner' do
+  if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
+    session[:message] = "Congratulations! #{session[:player_name]} wins!"
+  elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
+    session[:message] = "Sorry :( Dealer wins"
+  else
+    session[:message] = "It's a tie!"
+  end
+
   erb :declare_winner
 end

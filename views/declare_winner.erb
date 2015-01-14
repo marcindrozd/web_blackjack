@@ -1,4 +1,4 @@
-<h2>We have a winner!</h2>
+<h2><%= session[:message] %></h2>
 
 <h4><%= "Dealer has the following cards:" %></h4>
   <% session[:dealer_cards].each do |card| %>
