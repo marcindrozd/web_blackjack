@@ -23,9 +23,10 @@ helpers do
   def calculate_total(array)
     total = 0
     array.each do |card|
+      card = card.split("_")[1]
       if card.to_i != 0
         total += card.to_i
-      elsif card[0] == "A"
+      elsif card == "ace"
         total += 11
       else
         total += 10
@@ -33,7 +34,7 @@ helpers do
     end
 
     # Additional aces calculation
-    array.select { |item| item =~ /[A]/}.count.times do
+    array.select { |item| item =~ /ace/}.count.times do
       total -= 10 if total > 21
     end 
     total
@@ -110,7 +111,7 @@ post '/player_turn' do
     session[:player_cards] << session[:deck].pop
     redirect "/player_turn"
   elsif params.has_key?("stay")
-    redirect "/player_stay"
+    redirect "/dealer_turn"
   end
 end
 
@@ -122,6 +123,36 @@ get '/player_busted' do
   erb :"player/busted"
 end
 
-get '/player_stay' do
-  erb :"player/stay"
+get '/dealer_turn' do
+  check_blackjack_or_bust("dealer")
+
+  if calculate_total(session[:dealer_cards]) < 17
+    erb :"dealer/turn"
+  else
+    redirect "/declare_winner"
+  end
+end
+
+post '/dealer_turn' do
+  session[:dealer_cards] << session[:deck].pop
+
+  check_blackjack_or_bust("dealer")
+
+  if calculate_total(session[:dealer_cards]) < 17
+    erb :"dealer/turn"
+  else
+    redirect "/declare_winner"
+  end
+end
+
+get '/dealer_busted' do
+  erb :"dealer/busted"
+end
+
+get '/dealer_blackjack' do
+  erb :"dealer/blackjack"
+end
+
+get '/declare_winner' do
+  erb :declare_winner
 end

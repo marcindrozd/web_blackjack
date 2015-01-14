@@ -1,0 +1,13 @@
+<h2>We have a winner!</h2>
+
+<h4><%= "Dealer has the following cards:" %></h4>
+  <% session[:dealer_cards].each do |card| %>
+    <img src="images/cards/<%= card %>.jpg" class="img-polaroid" />
+  <% end %>
+  <h5>The total is: <%= calculate_total(session[:dealer_cards]) %></h5>
+
+<h4><%= "#{session[:player_name]} has the following cards:" %></h4>
+  <% session[:player_cards].each do |card| %>
+    <img src="images/cards/<%= card %>.jpg" class="img-polaroid" />
+  <% end %>
+  <h5>The total is: <%= calculate_total(session[:player_cards]) %></h5>
