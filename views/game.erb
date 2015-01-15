@@ -1,12 +1,12 @@
 <div class="well">
   <% if @hide_dealers_cards_and_total %>
     <h5><%= "Dealer has the following cards:" %></h5>
-    <img src="/images/cards/cover.jpg" class="img-polaroid" />
-    <img src="/images/cards/<%= session[:dealer_cards].last %>.jpg" class="img-polaroid" />
+    <img src="/images/cards/cover.jpg" class="img-polaroid card" />
+    <img src="/images/cards/<%= session[:dealer_cards].last %>.jpg" class="img-polaroid card" />
   <% else %>
     <h5>Dealer has the following cards with the total of <span class="text-success"><%= calculate_total(session[:dealer_cards]) %></span></h5>
     <% session[:dealer_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid" />
+      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
     <% end %>
     <form class="form-inline" action="/dealer/hit" method="post">
       <button type="submit" class="btn btn-info">Add another card to the dealer</button>
@@ -26,7 +26,7 @@
   <% end %>
   <div id="player_cards">
     <% session[:player_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid" />
+      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
     <% end %>
   </div>
 </div>

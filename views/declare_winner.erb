@@ -3,7 +3,7 @@
 <div class="well">
   <h5><%= "Dealer has the following cards:" %></h5>
     <% session[:dealer_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid" />
+      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
     <% end %>
   <h5>The total is: <%= calculate_total(session[:dealer_cards]) %></h5>
 </div>
@@ -12,6 +12,6 @@
 <div class="well">
   <h5><%= "#{session[:player_name]}" %> has the following cards with the total of <span class="text-success"><%= calculate_total(session[:player_cards]) %></span></h5>
     <% session[:player_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid" />
+      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
     <% end %>
 </div>

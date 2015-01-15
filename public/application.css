@@ -10,3 +10,8 @@ form#stay {
 #player_cards {
   clear: both;
 }
+
+img.card {
+  height: 175px;
+  width: 120px;
+}
