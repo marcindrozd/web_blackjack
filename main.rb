@@ -106,8 +106,12 @@ post '/player/hit' do
 
   if calculate_total(session[:player_cards]) == 21
     @error = "Congratulations! You hit blackjack!"
+    @player_turn = false
+    erb :game
   elsif calculate_total(session[:player_cards]) > 21
     @error = "Sorry, you busted!"
+    @player_turn = false
+    erb :game
   end
 
   erb :game
@@ -116,7 +120,14 @@ end
 post '/player/stay' do
   @hide_dealers_cards_and_total = false
 
-  erb :game
+  if calculate_total(session[:dealer_cards]) < 17
+    erb :game  
+  elsif calculate_total(session[:dealer_cards]) == 21
+    @error = "Sorry! The dealer hit blackjack!"
+    erb :game
+  else
+    redirect "/declare/winner"
+  end
 end
 
 post '/dealer/hit' do
@@ -125,11 +136,13 @@ post '/dealer/hit' do
   session[:dealer_cards] << session[:deck].pop
 
   if calculate_total(session[:dealer_cards]) < 17
-    erb :"game"
+    erb :game  
   elsif calculate_total(session[:dealer_cards]) == 21
     @error = "Sorry! The dealer hit blackjack!"
+    erb :game
   elsif calculate_total(session[:dealer_cards]) > 21
     @error = "The dealer busted! You win!"
+    erb :game
   else
     redirect "/declare/winner"
   end
