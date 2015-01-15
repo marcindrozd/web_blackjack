@@ -105,7 +105,7 @@ post '/player/hit' do
   session[:player_cards] << session[:deck].pop
 
   if calculate_total(session[:player_cards]) == 21
-    @error = "Congratulations! You hit blackjack!"
+    @success = "Congratulations! You hit blackjack!"
     @player_turn = false
     erb :game
   elsif calculate_total(session[:player_cards]) > 21
@@ -141,7 +141,7 @@ post '/dealer/hit' do
     @error = "Sorry! The dealer hit blackjack!"
     erb :game
   elsif calculate_total(session[:dealer_cards]) > 21
-    @error = "The dealer busted! You win!"
+    @success = "The dealer busted! You win!"
     erb :game
   else
     redirect "/declare/winner"
@@ -152,11 +152,11 @@ get '/declare/winner' do
   @hide_dealers_card_and_total = false
 
   if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
-    session[:message] = "Congratulations! #{session[:player_name]} wins!"
+    @success = "Congratulations! #{session[:player_name]} wins!"
   elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
-    session[:message] = "Sorry :( Dealer wins"
+    @error = "Sorry :( Dealer wins"
   else
-    session[:message] = "It's a tie!"
+    @info = "It's a tie!"
   end
 
   erb :declare_winner
