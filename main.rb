@@ -42,12 +42,12 @@ helpers do
 
   def check_if_win_or_bust_player(array)
     if calculate_total(array) == 21
-      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}}"
+      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}}."
       session[:total_money] += session[:last_bet].to_i * 2
       @player_turn = false
       erb :game
     elsif calculate_total(array) > 21
-      @defeat = "Sorry, you busted! You lost $#{session[:last_bet]}"
+      @defeat = "Sorry, you busted! You lost $#{session[:last_bet]}."
       @player_turn = false
       erb :game
     end
@@ -57,7 +57,7 @@ helpers do
     if calculate_total(array) < 17
       erb :game  
     elsif calculate_total(array) == 21
-      @defeat = "Sorry! The dealer hit blackjack! You lost $#{session[:last_bet]}"
+      @defeat = "Sorry! The dealer hit blackjack! You lost $#{session[:last_bet]}."
       erb :game
     elsif calculate_total(array) > 21
       @success = "The dealer busted! You win $#{session[:last_bet].to_i * 2}!"
@@ -116,6 +116,9 @@ post '/bet' do
   elsif !params[:bet].numeric?
     @error = "Please enter a number!"
     halt erb :bet
+  elsif params[:bet].to_i.abs > session[:total_money]
+    @error = "You cannot bet more than your total: #{session[:total_money]}!"
+    halt erb :bet
   end
 
   session[:total_money] -= params[:bet].to_i.abs
@@ -170,7 +173,7 @@ get '/declare/winner' do
     @success = "Congratulations! #{session[:player_name]} wins $#{session[:last_bet].to_i * 2}!"
     session[:total_money] += session[:last_bet].to_i * 2
   elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
-    @defeat = "Sorry :( Dealer wins. You lost $#{session[:last_bet]}"
+    @defeat = "Sorry :( Dealer wins. You lost $#{session[:last_bet]}."
   else
     @info = "It's a tie! You get the $#{session[:last_bet]} back."
     session[:total_money] += session[:last_bet].to_i

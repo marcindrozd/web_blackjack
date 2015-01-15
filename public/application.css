@@ -7,6 +7,10 @@ form#stay {
   float: left;
 }
 
+button#dealer-btn {
+  margin-top: 5px;
+}
+
 #player_cards {
   clear: both;
 }
