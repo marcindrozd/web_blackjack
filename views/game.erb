@@ -19,9 +19,11 @@
 <% end %>
 <h5>The total is: <%= calculate_total(session[:player_cards]) %></h5>
 
-<form class="form-inline" action="/player/hit" method="post">
-  <button type="submit" class="btn">Hit</button>
-</form>
-<form class="form-inline" action="/player/stay" method="post">
-  <button type="submit" class="btn">Stay</button>
-</form>
+<% if @player_turn %>
+  <form class="form-inline" action="/player/hit" method="post">
+    <button type="submit" class="btn">Hit</button>
+  </form>
+  <form class="form-inline" action="/player/stay" method="post">
+    <button type="submit" class="btn">Stay</button>
+  </form>
+<% end %>

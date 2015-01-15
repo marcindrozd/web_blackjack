@@ -59,6 +59,7 @@ end
 
 before do
   @hide_dealers_cards_and_total = true
+  @player_turn = false
 end
 
 get '/' do
@@ -85,6 +86,7 @@ post '/new_game' do
 end
 
 get '/game' do
+  @player_turn = true
   prepare_deck
 
   session[:player_cards] = []
@@ -99,7 +101,7 @@ get '/game' do
 end
 
 post '/player/hit' do
-  # check bust or blackjack
+  @player_turn = true
   session[:player_cards] << session[:deck].pop
 
   if calculate_total(session[:player_cards]) == 21
