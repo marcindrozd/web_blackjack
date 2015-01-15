@@ -39,6 +39,32 @@ helpers do
     end 
     total
   end
+
+  def check_if_win_or_bust_player(array)
+    if calculate_total(array) == 21
+      @success = "Congratulations! You hit blackjack!"
+      @player_turn = false
+      erb :game
+    elsif calculate_total(array) > 21
+      @defeat = "Sorry, you busted!"
+      @player_turn = false
+      erb :game
+    end
+  end
+
+  def check_if_win_or_bust_dealer(array)
+    if calculate_total(array) < 17
+      erb :game  
+    elsif calculate_total(array) == 21
+      @defeat = "Sorry! The dealer hit blackjack!"
+      erb :game
+    elsif calculate_total(array) > 21
+      @success = "The dealer busted! You win!"
+      erb :game
+    else
+      redirect "/declare/winner"
+    end
+  end
 end
 
 before do
@@ -81,15 +107,7 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
 
-  if calculate_total(session[:player_cards]) == 21
-    @success = "Congratulations! You hit blackjack!"
-    @player_turn = false
-    erb :game
-  elsif calculate_total(session[:player_cards]) > 21
-    @defeat = "Sorry, you busted!"
-    @player_turn = false
-    erb :game
-  end
+  check_if_win_or_bust_player(session[:player_cards])
   
   erb :game
 end
@@ -98,15 +116,7 @@ post '/player/hit' do
   @player_turn = true
   session[:player_cards] << session[:deck].pop
 
-  if calculate_total(session[:player_cards]) == 21
-    @success = "Congratulations! You hit blackjack!"
-    @player_turn = false
-    erb :game
-  elsif calculate_total(session[:player_cards]) > 21
-    @defeat = "Sorry, you busted!"
-    @player_turn = false
-    erb :game
-  end
+  check_if_win_or_bust_player(session[:player_cards])
 
   erb :game
 end
@@ -114,14 +124,7 @@ end
 post '/player/stay' do
   @hide_dealers_cards_and_total = false
 
-  if calculate_total(session[:dealer_cards]) < 17
-    erb :game  
-  elsif calculate_total(session[:dealer_cards]) == 21
-    @defeat = "Sorry! The dealer hit blackjack!"
-    erb :game
-  else
-    redirect "/declare/winner"
-  end
+  check_if_win_or_bust_dealer(session[:dealer_cards])
 end
 
 post '/dealer/hit' do
@@ -129,17 +132,7 @@ post '/dealer/hit' do
 
   session[:dealer_cards] << session[:deck].pop
 
-  if calculate_total(session[:dealer_cards]) < 17
-    erb :game  
-  elsif calculate_total(session[:dealer_cards]) == 21
-    @defeat = "Sorry! The dealer hit blackjack!"
-    erb :game
-  elsif calculate_total(session[:dealer_cards]) > 21
-    @success = "The dealer busted! You win!"
-    erb :game
-  else
-    redirect "/declare/winner"
-  end
+  check_if_win_or_bust_dealer(session[:dealer_cards])
 end
 
 get '/declare/winner' do
