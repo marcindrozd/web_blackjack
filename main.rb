@@ -42,11 +42,12 @@ helpers do
 
   def check_if_win_or_bust_player(array)
     if calculate_total(array) == 21
-      @success = "Congratulations! You hit blackjack!"
+      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}}"
+      session[:total_money] += session[:last_bet].to_i * 2
       @player_turn = false
       erb :game
     elsif calculate_total(array) > 21
-      @defeat = "Sorry, you busted!"
+      @defeat = "Sorry, you busted! You lost $#{session[:last_bet]}"
       @player_turn = false
       erb :game
     end
@@ -56,10 +57,11 @@ helpers do
     if calculate_total(array) < 17
       erb :game  
     elsif calculate_total(array) == 21
-      @defeat = "Sorry! The dealer hit blackjack!"
+      @defeat = "Sorry! The dealer hit blackjack! You lost $#{session[:last_bet]}"
       erb :game
     elsif calculate_total(array) > 21
-      @success = "The dealer busted! You win!"
+      @success = "The dealer busted! You win $#{session[:last_bet].to_i * 2}!"
+      session[:total_money] += session[:last_bet].to_i * 2
       erb :game
     else
       redirect "/declare/winner"
@@ -74,6 +76,7 @@ end
 
 get '/' do
   session.clear
+  session[:total_money] = 500
   redirect "/new_game"
 end
 
@@ -92,6 +95,21 @@ post '/new_game' do
   end
 
   session[:player_name] = params[:player_name]
+  redirect "/bet"
+end
+
+get '/bet' do
+  erb :bet
+end
+
+post '/bet' do
+  if params[:bet].empty?
+    @error = "Please enter how much would you like to bet!"
+    halt erb :bet
+  end
+
+  session[:total_money] -= params[:bet].to_i
+  session[:last_bet] = params[:bet].to_i
   redirect "/game"
 end
 
@@ -139,11 +157,13 @@ get '/declare/winner' do
   @hide_dealers_card_and_total = false
 
   if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
-    @success = "Congratulations! #{session[:player_name]} wins!"
+    @success = "Congratulations! #{session[:player_name]} wins $#{session[:last_bet].to_i * 2}!"
+    session[:total_money] += session[:last_bet].to_i * 2
   elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
-    @defeat = "Sorry :( Dealer wins"
+    @defeat = "Sorry :( Dealer wins. You lost $#{session[:last_bet]}"
   else
-    @info = "It's a tie!"
+    @info = "It's a tie! You get the $#{session[:last_bet]} back."
+    session[:total_money] += session[:last_bet].to_i
   end
 
   erb :declare_winner
