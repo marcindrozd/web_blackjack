@@ -55,7 +55,10 @@ helpers do
       end
     end
   end
+end
 
+before do
+  @hide_dealers_cards_and_total = true
 end
 
 get '/' do
@@ -109,40 +112,32 @@ post '/player/hit' do
 end
 
 post '/player/stay' do
-  redirect '/dealer_turn'
+  @hide_dealers_cards_and_total = false
+
+  erb :game
 end
 
-get '/dealer_turn' do
-  check_blackjack_or_bust("dealer")
+post '/dealer/hit' do
+  @hide_dealers_cards_and_total = false
 
-  if calculate_total(session[:dealer_cards]) < 17
-    erb :"dealer/turn"
-  else
-    redirect "/declare_winner"
-  end
-end
-
-post '/dealer_turn' do
   session[:dealer_cards] << session[:deck].pop
 
-  check_blackjack_or_bust("dealer")
+  if calculate_total(session[:dealer_cards]) == 21
+    @error = "Sorry! The dealer hit blackjack!"
+  elsif calculate_total(session[:dealer_cards]) > 21
+    @error = "The dealer busted! You win!"
+  end
 
   if calculate_total(session[:dealer_cards]) < 17
-    erb :"dealer/turn"
+    erb :"game"
   else
-    redirect "/declare_winner"
+    redirect "/declare/winner"
   end
 end
 
-get '/dealer_busted' do
-  erb :"dealer/busted"
-end
+get '/declare/winner' do
+  @hide_dealers_card_and_total = false
 
-get '/dealer_blackjack' do
-  erb :"dealer/blackjack"
-end
-
-get '/declare_winner' do
   if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
     session[:message] = "Congratulations! #{session[:player_name]} wins!"
   elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
