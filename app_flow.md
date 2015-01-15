@@ -12,3 +12,4 @@ to-do
 - add question about playing another round (when no, go back to user name with info to enter username to begin)
 - play with colors and design
 - add help button with rules of the game
+- downsize the card images a bit (120x175)

@@ -21,11 +21,25 @@
     <%if @error %>
       <div class="alert alert-error"><%=@error%></div>
     <% end %>
+    <%if @defeat %>
+      <div class="alert alert-error">
+        <%=@defeat%> Play another round? 
+        <a href="/game"><button class="btn">Yes</button></a>
+        <a href="/"><button class="btn">No</button></a>
+      </div>
+    <% end %>
     <%if @success %>
-      <div class="alert alert-success"><%=@success%></div>
+      <div class="alert alert-success">
+        <%=@success%> Play another round?
+        <a href="/game"><button class="btn">Yes</button></a>
+        <a href="/"><button class="btn">No</button></a>
+      </div>
     <% end %>
     <%if @info %>
-      <div class="alert alert-info"><%=@info%></div>
+      <div class="alert alert-info">
+      <%=@info%> Play another round?</div>
+      <a href="/game"><button class="btn">Yes</button></a>
+      <a href="/"><button class="btn">No</button></a>
     <% end %>
       <%= yield %>
   </div>

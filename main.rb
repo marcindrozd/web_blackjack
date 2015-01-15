@@ -39,22 +39,6 @@ helpers do
     end 
     total
   end
-
-  def check_blackjack_or_bust(player_or_dealer)
-    if player_or_dealer == "player"
-      if calculate_total(session[:player_cards]) == 21
-        @error = "Congratulations! You hit blackjack!"
-      elsif calculate_total(session[:player_cards]) > 21
-        @error = "Sorry, you busted!"
-      end
-    else
-      if calculate_total(session[:dealer_cards]) == 21
-        @error = "Sorry! The dealer hit blackjack!"
-      elsif calculate_total(session[:dealer_cards]) > 21
-        @error = "The dealer busted!"
-      end
-    end
-  end
 end
 
 before do
@@ -123,7 +107,7 @@ post '/player/stay' do
   if calculate_total(session[:dealer_cards]) < 17
     erb :game  
   elsif calculate_total(session[:dealer_cards]) == 21
-    @error = "Sorry! The dealer hit blackjack!"
+    @defeat = "Sorry! The dealer hit blackjack!"
     erb :game
   else
     redirect "/declare/winner"
@@ -138,7 +122,7 @@ post '/dealer/hit' do
   if calculate_total(session[:dealer_cards]) < 17
     erb :game  
   elsif calculate_total(session[:dealer_cards]) == 21
-    @error = "Sorry! The dealer hit blackjack!"
+    @defeat = "Sorry! The dealer hit blackjack!"
     erb :game
   elsif calculate_total(session[:dealer_cards]) > 21
     @success = "The dealer busted! You win!"
@@ -154,7 +138,7 @@ get '/declare/winner' do
   if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
     @success = "Congratulations! #{session[:player_name]} wins!"
   elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
-    @error = "Sorry :( Dealer wins"
+    @defeat = "Sorry :( Dealer wins"
   else
     @info = "It's a tie!"
   end
