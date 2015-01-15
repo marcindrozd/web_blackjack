@@ -124,14 +124,12 @@ post '/dealer/hit' do
 
   session[:dealer_cards] << session[:deck].pop
 
-  if calculate_total(session[:dealer_cards]) == 21
+  if calculate_total(session[:dealer_cards]) < 17
+    erb :"game"
+  elsif calculate_total(session[:dealer_cards]) == 21
     @error = "Sorry! The dealer hit blackjack!"
   elsif calculate_total(session[:dealer_cards]) > 21
     @error = "The dealer busted! You win!"
-  end
-
-  if calculate_total(session[:dealer_cards]) < 17
-    erb :"game"
   else
     redirect "/declare/winner"
   end
