@@ -81,6 +81,16 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
 
+  if calculate_total(session[:player_cards]) == 21
+    @success = "Congratulations! You hit blackjack!"
+    @player_turn = false
+    erb :game
+  elsif calculate_total(session[:player_cards]) > 21
+    @defeat = "Sorry, you busted!"
+    @player_turn = false
+    erb :game
+  end
+  
   erb :game
 end
 
@@ -93,7 +103,7 @@ post '/player/hit' do
     @player_turn = false
     erb :game
   elsif calculate_total(session[:player_cards]) > 21
-    @error = "Sorry, you busted!"
+    @defeat = "Sorry, you busted!"
     @player_turn = false
     erb :game
   end
