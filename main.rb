@@ -67,6 +67,13 @@ helpers do
       redirect "/declare/winner"
     end
   end
+
+  # extends the String class to check if number was entered
+  class String
+    def numeric?
+      Float(self) != nil rescue false
+    end
+  end
 end
 
 before do
@@ -106,10 +113,13 @@ post '/bet' do
   if params[:bet].empty?
     @error = "Please enter how much would you like to bet!"
     halt erb :bet
+  elsif !params[:bet].numeric?
+    @error = "Please enter a number!"
+    halt erb :bet
   end
 
-  session[:total_money] -= params[:bet].to_i
-  session[:last_bet] = params[:bet].to_i
+  session[:total_money] -= params[:bet].to_i.abs
+  session[:last_bet] = params[:bet].to_i.abs
   redirect "/game"
 end
 
