@@ -106,6 +106,10 @@ post '/new_game' do
 end
 
 get '/bet' do
+  if session[:total_money] == 0
+    redirect "/game_over"
+  end
+
   erb :bet
 end
 
@@ -180,4 +184,13 @@ get '/declare/winner' do
   end
 
   erb :declare_winner
+end
+
+get '/game_over' do
+  if session[:total_money] == 0
+    @no_money = true
+    @defeat = "Sorry, you have no more money to bet... :("
+  end
+
+  erb :game_over
 end
