@@ -1,4 +1,25 @@
 <div id="game">
+    <%if @loser %>
+      <div class="alert alert-error">
+        <%=@loser%> 
+        <% if !@no_money %>
+          Play another round? 
+          <a href="/bet"><button class="btn">Yes</button></a>
+          <a href="/game_over"><button class="btn">No</button></a>
+        <% end %>
+      </div>
+    <% end %>
+    <%if @winner %>
+      <div class="alert alert-success">
+        <%=@winner%> 
+        <% if !@no_money %>
+          Play another round?
+          <a href="/bet"><button class="btn">Yes</button></a>
+          <a href="/game_over"><button class="btn">No</button></a>
+        <% end %>
+      </div>
+    <% end %>
+
   <div class="well">
     <% if @hide_dealers_cards_and_total %>
       <h5><%= "Dealer has the following cards:" %></h5>
@@ -9,9 +30,11 @@
       <% session[:dealer_cards].each do |card| %>
         <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
       <% end %>
+      <% if @dealer_button %>
       <form class="form-inline" action="/dealer/hit" method="post">
         <button type="submit" class="btn btn-info" id="dealer-btn">Add another card to the dealer</button>
       </form>
+      <% end %>
     <% end %>
   </div>
 

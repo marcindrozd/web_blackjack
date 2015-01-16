@@ -40,32 +40,27 @@ helpers do
     total
   end
 
-  def check_if_win_or_bust_player(array)
-    if calculate_total(array) == 21
-      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}."
-      session[:total_money] += session[:last_bet].to_i * 2
-      @player_turn = false
-      erb :game
-    elsif calculate_total(array) > 21
-      @defeat = "Sorry, you busted! You lost $#{session[:last_bet]}."
-      @player_turn = false
-      erb :game
-    end
+  def winner(msg)
+    @play_again = true
+    @player_turn = false
+    @dealer_button = false
+    session[:total_money] += session[:last_bet].to_i
+    @winner = "#{session[:player_name]} wins! #{msg}"
   end
 
-  def check_if_win_or_bust_dealer(array)
-    if calculate_total(array) < 17
-      erb :game  
-    elsif calculate_total(array) == 21
-      @defeat = "Sorry! The dealer hit blackjack! You lost $#{session[:last_bet]}."
-      erb :game
-    elsif calculate_total(array) > 21
-      @success = "The dealer busted! You win $#{session[:last_bet].to_i * 2}!"
-      session[:total_money] += session[:last_bet].to_i * 2
-      erb :game
-    else
-      redirect "/declare/winner"
-    end
+  def loser(msg)
+    @play_again = true
+    @player_turn = false
+    @dealer_button = false
+    session[:total_money] -= session[:last_bet].to_i
+    @loser = "#{session[:player_name]} loses! #{msg}"
+  end
+
+  def tie(msg)
+    @play_again = true
+    @player_turn = false
+    @dealer_button = false
+    @winner = "It's a tie! #{msg}"
   end
 
   # extends the String class to check if number was entered
@@ -124,7 +119,6 @@ post '/bet' do
     @error = "You cannot bet more than your total: #{session[:total_money]}!"
     halt erb :bet
   else
-    session[:total_money] -= params[:bet].to_i.abs
     session[:last_bet] = params[:bet].to_i.abs
     redirect "/game"
   end
@@ -142,7 +136,9 @@ get '/game' do
   session[:player_cards] << session[:deck].pop
   session[:dealer_cards] << session[:deck].pop
 
-  check_if_win_or_bust_player(session[:player_cards])
+  if calculate_total(session[:player_cards]) == 21
+    winner("You hit Blackjack!")
+  end
   
   erb :game
 end
@@ -151,7 +147,13 @@ post '/player/hit' do
   @player_turn = true
   session[:player_cards] << session[:deck].pop
 
-  check_if_win_or_bust_player(session[:player_cards])
+  player_total = calculate_total(session[:player_cards])
+
+  if player_total == 21
+    winner("You hit Blackjack!")
+  elsif player_total > 21
+    loser("You busted!")
+  end
 
   erb :game, layout: false
 end
@@ -159,31 +161,57 @@ end
 post '/player/stay' do
   @hide_dealers_cards_and_total = false
 
-  check_if_win_or_bust_dealer(session[:dealer_cards])
+  dealer_total = calculate_total(session[:dealer_cards])
+  
+  if dealer_total == 21
+    loser("The dealer hit Blackjack!")
+  else
+    redirect '/dealer/hit'
+  end
 end
 
+get '/dealer/hit' do
+  @hide_dealers_cards_and_total = false
+  @dealer_button = true
+
+  dealer_total = calculate_total(session[:dealer_cards])
+
+  if dealer_total == 21
+    loser("The dealer hit Blackjack!")
+  elsif dealer_total > 21
+    winner("The dealer busted!")
+  elsif dealer_total >= 17
+    redirect '/declare/winner'
+  else
+    @show_dealer_hit_button = true
+  end
+
+  erb :game, layout: false
+end
+    
 post '/dealer/hit' do
   @hide_dealers_cards_and_total = false
+  @dealer_button = true
 
   session[:dealer_cards] << session[:deck].pop
-
-  check_if_win_or_bust_dealer(session[:dealer_cards])
+  redirect '/dealer/hit'
 end
 
 get '/declare/winner' do
   @hide_dealers_card_and_total = false
 
-  if calculate_total(session[:player_cards]) > calculate_total(session[:dealer_cards])
-    @success = "Congratulations! #{session[:player_name]} wins $#{session[:last_bet].to_i * 2}!"
-    session[:total_money] += session[:last_bet].to_i * 2
-  elsif calculate_total(session[:player_cards]) < calculate_total(session[:dealer_cards])
-    @defeat = "Sorry :( Dealer wins. You lost $#{session[:last_bet]}."
+  player_total = calculate_total(session[:player_cards])
+  dealer_total = calculate_total(session[:dealer_cards])
+
+  if player_total > dealer_total
+    winner("Player had #{player_total} vs. dealer's #{dealer_total}.")
+  elsif player_total < dealer_total
+    loser("Player had #{player_total} vs. dealer's #{dealer_total}.")
   else
-    @info = "It's a tie! You get the $#{session[:last_bet]} back."
-    session[:total_money] += session[:last_bet].to_i
+    tie("Player and dealer tied at #{player_total}.")
   end
 
-  erb :declare_winner
+  erb :game, layout: false
 end
 
 get '/game_over' do
