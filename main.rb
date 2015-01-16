@@ -42,7 +42,7 @@ helpers do
 
   def check_if_win_or_bust_player(array)
     if calculate_total(array) == 21
-      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}}."
+      @success = "Congratulations! You hit blackjack! You win $#{session[:last_bet].to_i * 2}."
       session[:total_money] += session[:last_bet].to_i * 2
       @player_turn = false
       erb :game
@@ -123,11 +123,11 @@ post '/bet' do
   elsif params[:bet].to_i.abs > session[:total_money]
     @error = "You cannot bet more than your total: #{session[:total_money]}!"
     halt erb :bet
+  else
+    session[:total_money] -= params[:bet].to_i.abs
+    session[:last_bet] = params[:bet].to_i.abs
+    redirect "/game"
   end
-
-  session[:total_money] -= params[:bet].to_i.abs
-  session[:last_bet] = params[:bet].to_i.abs
-  redirect "/game"
 end
 
 get '/game' do
@@ -153,7 +153,7 @@ post '/player/hit' do
 
   check_if_win_or_bust_player(session[:player_cards])
 
-  erb :game
+  erb :game, layout: false
 end
 
 post '/player/stay' do

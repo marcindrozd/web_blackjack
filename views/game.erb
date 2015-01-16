@@ -1,32 +1,34 @@
-<div class="well">
-  <% if @hide_dealers_cards_and_total %>
-    <h5><%= "Dealer has the following cards:" %></h5>
-    <img src="/images/cards/cover.jpg" class="img-polaroid card" />
-    <img src="/images/cards/<%= session[:dealer_cards].last %>.jpg" class="img-polaroid card" />
-  <% else %>
-    <h5>Dealer has the following cards with the total of <span class="text-success"><%= calculate_total(session[:dealer_cards]) %></span>.</h5>
-    <% session[:dealer_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
+<div id="game">
+  <div class="well">
+    <% if @hide_dealers_cards_and_total %>
+      <h5><%= "Dealer has the following cards:" %></h5>
+      <img src="/images/cards/cover.jpg" class="img-polaroid card" />
+      <img src="/images/cards/<%= session[:dealer_cards].last %>.jpg" class="img-polaroid card" />
+    <% else %>
+      <h5>Dealer has the following cards with the total of <span class="text-success"><%= calculate_total(session[:dealer_cards]) %></span>.</h5>
+      <% session[:dealer_cards].each do |card| %>
+        <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
+      <% end %>
+      <form class="form-inline" action="/dealer/hit" method="post">
+        <button type="submit" class="btn btn-info" id="dealer-btn">Add another card to the dealer</button>
+      </form>
     <% end %>
-    <form class="form-inline" action="/dealer/hit" method="post">
-      <button type="submit" class="btn btn-info" id="dealer-btn">Add another card to the dealer</button>
-    </form>
-  <% end %>
-</div>
+  </div>
 
-<div class="well">
-  <h5><%= "#{session[:player_name]}" %> has the following cards with the total of <span class="text-success"><%= calculate_total(session[:player_cards]) %></span>.</h5>
-  <% if @player_turn %>
-    <form action="/player/hit" method="post" id="hit">
-      <button type="submit" class="btn btn-info">Hit</button>
-    </form>
-    <form action="/player/stay" method="post" id="stay">
-      <button type="submit" class="btn btn-success">Stay</button>
-    </form>
-  <% end %>
-  <div id="player_cards">
-    <% session[:player_cards].each do |card| %>
-      <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
+  <div class="well">
+    <h5><%= "#{session[:player_name]}" %> has the following cards with the total of <span class="text-success"><%= calculate_total(session[:player_cards]) %></span>.</h5>
+    <% if @player_turn %>
+      <form action="/player/hit" method="post" id="hit">
+        <button type="submit" class="btn btn-info" id="btn-hit">Hit</button>
+      </form>
+      <form action="/player/stay" method="post" id="stay">
+        <button type="submit" class="btn btn-success" id="btn-stay">Stay</button>
+      </form>
     <% end %>
+    <div id="player_cards">
+      <% session[:player_cards].each do |card| %>
+        <img src="/images/cards/<%= card %>.jpg" class="img-polaroid card" />
+      <% end %>
+    </div>
   </div>
 </div>
