@@ -202,7 +202,7 @@ post '/dealer/hit' do
 end
 
 get '/declare/winner' do
-  @hide_dealers_card_and_total = false
+  @hide_dealers_cards_and_total = false
 
   player_total = calculate_total(session[:player_cards])
   dealer_total = calculate_total(session[:dealer_cards])
