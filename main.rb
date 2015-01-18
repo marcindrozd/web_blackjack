@@ -113,8 +113,8 @@ get '/bet' do
 end
 
 post '/bet' do
-  if params[:bet].empty?
-    @error = "Please enter how much would you like to bet!"
+  if params[:bet].empty? || params[:bet].to_i == 0
+    @error = "Please enter a bet between 1 and #{session[:total_money]}"
     halt erb :bet
   elsif !params[:bet].numeric?
     @error = "Please enter a number!"
