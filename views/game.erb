@@ -39,7 +39,7 @@
   </div>
 
   <div class="well">
-    <h5><%= "#{session[:player_name]}" %> has the following cards with the total of <span class="text-success"><%= calculate_total(session[:player_cards]) %></span>.</h5>
+    <h5><%= "#{session[:player_name]}" %> has the following cards with the total of <span class="text-success"><%= calculate_total(session[:player_cards]) %></span>. Current bet is: <strong>$<%= session[:last_bet] %></strong>.</h5>
     <% if @player_turn %>
       <form action="/player/hit" method="post" id="hit">
         <button type="submit" class="btn btn-info" id="btn-hit">Hit</button>
