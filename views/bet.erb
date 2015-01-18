@@ -1,6 +1,6 @@
 <h5>Currently you have: $<%= "#{session[:total_money]}" %></h5>
 <p>How much would you like to bet?</p>
-<form class="form-inline" method="post">
-  <input type="text" name="bet">
+<form class="form-inline input-box" method="post">
+  <input type="text" name="bet" value=<%=session[:last_bet]%>>
   <button type="submit" class="btn">Bet</button>
 </form>

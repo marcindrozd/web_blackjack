@@ -1,4 +1,6 @@
 $(document).ready(function() {
+  $('.input-box input').focus();
+
   $(document).on('click', '#btn-hit', function() {
     $.ajax({
       type: 'POST',
